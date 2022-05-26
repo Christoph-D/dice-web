@@ -1,0 +1,32 @@
+{
+  "name": "dice-web-app",
+  "version": "0.1.0",
+  "description": "Puts dice-web on a website",
+  "main": "index.js",
+  "scripts": {
+    "build": "webpack --config webpack.config.js",
+    "start": "webpack-dev-server"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Christoph-D/dice-web"
+  },
+  "keywords": [
+    "webassembly",
+    "wasm",
+    "rust",
+    "webpack"
+  ],
+  "author": "Christoph Dittmann <github@yozora.eu>",
+  "license": "MIT",
+  "homepage": "https://github.com/Christoph-D/dice-web",
+  "dependencies": {
+    "dice-web": "file:../pkg"
+  },
+  "devDependencies": {
+    "webpack": "^4.29.3",
+    "webpack-cli": "^3.1.0",
+    "webpack-dev-server": "^3.1.5",
+    "copy-webpack-plugin": "^5.0.0"
+  }
+}

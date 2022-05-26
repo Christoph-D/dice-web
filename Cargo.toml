@@ -1,0 +1,28 @@
+[package]
+name = "dice-web"
+version = "0.1.0"
+authors = ["Christoph Dittmann <github@yozora.eu>"]
+edition = "2021"
+description = "Evaluator for RPG-style dice specification like 2d6+4"
+repository = "https://github.com/Christoph-D/dice-web"
+license = "MIT"
+
+[lib]
+crate-type = ["cdylib"]
+
+[features]
+default = ["console_error_panic_hook"]
+
+[dependencies]
+console_error_panic_hook = { version = "0.1.7", optional = true }
+getrandom = { version = "0.2.6", features = ["js"] }
+nom = "7.1.1"
+rand = { version = "0.8.5", default-features = false, features = ["getrandom"] }
+wasm-bindgen = "0.2.80"
+wee_alloc = "0.4.5"
+
+[dev-dependencies]
+wasm-bindgen-test = "0.3.30"
+
+[profile.release]
+opt-level = "s"
