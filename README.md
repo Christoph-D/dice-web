@@ -1,6 +1,6 @@
 # Dice
 
-A Rust WebAssembly experiment that evalutes RPG-style dice specifications like `2d6+4`.
+A Rust WebAssembly experiment that evaluates RPG-style dice specifications like `2d6+4`.
 
 ## Example
 
