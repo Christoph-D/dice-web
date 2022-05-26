@@ -1,14 +1,22 @@
 mod dice;
 
+use rand::rngs::SmallRng;
+use rand::SeedableRng;
 use wasm_bindgen::prelude::*;
 
 #[cfg(feature = "wee_alloc")]
 #[global_allocator]
 static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 
+static mut RNG: Option<SmallRng> = None;
+
 #[wasm_bindgen]
 pub fn roll(s: &str) -> String {
-    match dice::roll(s) {
+    let rng = unsafe { &mut RNG };
+    if rng.is_none() {
+        *rng = Some(SmallRng::from_entropy());
+    }
+    match dice::roll(s, rng.as_mut().unwrap()) {
         Ok(r) => format!("{}", r),
         Err(_) => "".to_string(),
     }

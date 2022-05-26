@@ -4,7 +4,6 @@ use nom::{
     combinator::{eof, map_res},
     IResult,
 };
-use rand::Rng;
 use std::str::FromStr;
 
 #[derive(Debug, PartialEq)]
@@ -66,12 +65,11 @@ impl Piece {
         }
         Ok(())
     }
-    fn roll(&self) -> u64 {
+    fn roll(&self, rng: &mut impl rand::Rng) -> u64 {
         let (count, sides) = match *self {
             Piece::Offset(offset) => return offset,
             Piece::Die { count, sides } => (count, sides),
         };
-        let mut rng = rand::rngs::OsRng;
         let mut sum = 0;
         for _ in 0..count {
             sum += rng.gen_range(1..sides + 1);
@@ -82,36 +80,40 @@ impl Piece {
 
 impl Dice {
     fn validate(&self) -> Result<(), String> {
-        self.pieces.iter().map(|p| p.validate()).collect()
+        self.pieces.iter().try_for_each(|p| p.validate())
     }
-    fn roll(&self) -> u64 {
+    fn roll(&self, rng: &mut impl rand::Rng) -> u64 {
         let mut sum = 0;
         for piece in self.pieces.iter() {
-            sum += piece.roll()
+            sum += piece.roll(rng)
         }
         sum
     }
 }
 
-pub fn roll(spec: &str) -> Result<u64, String> {
-    let dice = match dice_specification(&spec) {
+pub fn roll(spec: &str, rng: &mut impl rand::Rng) -> Result<u64, String> {
+    let dice = match dice_specification(spec) {
         Ok(dice) => dice,
         Err(e) => return Err(format!("failed to parse '{}': {}", spec, e)),
     };
     dice.validate()?;
-    Ok(dice.roll())
+    Ok(dice.roll(rng))
 }
 
 #[cfg(test)]
 mod tests {
+    use rand::rngs::SmallRng;
+    use rand::SeedableRng;
+
     use super::{dice_specification, roll, single_die, Dice, Piece};
     #[test]
     fn roll_dice() {
-        assert!(roll("1d6").is_ok());
-        assert!(roll("4d20+10").is_ok());
-        assert!(roll("0d6+4d5+10+2").is_ok());
-        assert!(roll("6d8 + 2 + 5d6").is_ok());
-        assert!(roll("6d8 + 2 2 + 5d6").is_err());
+        let mut rng = SmallRng::from_entropy();
+        assert!(roll("1d6", &mut rng).is_ok());
+        assert!(roll("4d20+10", &mut rng).is_ok());
+        assert!(roll("0d6+4d5+10+2", &mut rng).is_ok());
+        assert!(roll("6d8 + 2 + 5d6", &mut rng).is_ok());
+        assert!(roll("6d8 + 2 2 + 5d6", &mut rng).is_err());
     }
     #[test]
     fn die_specification_parsing() {
