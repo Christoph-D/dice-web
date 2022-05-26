@@ -8,10 +8,9 @@ use wasm_bindgen::prelude::*;
 #[global_allocator]
 static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 
-static mut RNG: Option<SmallRng> = None;
-
 #[wasm_bindgen]
 pub fn roll(s: &str) -> String {
+    static mut RNG: Option<SmallRng> = None;
     let rng = unsafe { &mut RNG };
     if rng.is_none() {
         *rng = Some(SmallRng::from_entropy());
